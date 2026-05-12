@@ -1,0 +1,412 @@
+# nav2_params.yaml —  v9-ReduceInflation
+# ─────────────────────────────────────────────────────────────────
+# อิงจาก nav2_params.yaml (v8-SyncWithSim) + ลดพื้นที่อันตราย (inflation zone)
+#
+# สิ่งที่เปลี่ยนจาก v8:
+#
+#   [FIX 9-A] inflation_radius: 1.0 → 0.6  (global + local costmap)
+#             เหตุผล: ลดรัศมีพื้นที่อันตราย (cyan zone) ให้แคบลง
+#                     ยังคงปลอดภัยเพราะ robot_radius = 0.35 m
+#                     margin เหลือ ~0.25 m รอบตัวหุ่น
+#
+#   [FIX 9-B] cost_scaling_factor: 2.0 → 3.0  (global + local + RPP)
+#             เหตุผล: gradient ชันขึ้น zone หดแคบเร็วขึ้น
+#                     หุ่นยังหนีกำแพงได้ แต่พื้นที่เดินได้กว้างขึ้น
+#
+#   [FIX 9-C] use_cost_regulated_linear_velocity_scaling: true → false
+#             regulated_linear_scaling_min_radius: 0.6 → 0.9
+#             regulated_linear_scaling_min_speed:  0.15 → 0.25
+#             เหตุผล: revert FIX 8-C เพราะ inflation zone เล็กลงแล้ว
+#                     ไม่จำเป็นต้องชะลอมากใกล้กำแพง
+#
+# สรุป fixes ทั้งหมด:
+#   v3 [FIX 1] ลบ BT plugin ที่ไม่มีใน Humble
+#   v3 [FIX 2] odom_topic: /odometry/filtered ใน AMCL
+#   v5 [FIX 3] robot_model_type: nav2_amcl::DifferentialMotionModel
+#   v5 [FIX 4] เพิ่ม alpha5 ใน AMCL
+#   v5 [FIX 5] ปรับ AMCL parameter names ให้ตรง Humble API
+#   v7 [FIX 7] default_nav_through_poses_bt_xml → XML ที่ไม่ใช้ backup
+#   v8 [FIX 8] sync inflation, cost_scaling, astar, velocity_smoother กับ Sim
+#   v9 [FIX 9] ลด inflation_radius + เพิ่ม cost_scaling_factor เพื่อลด danger zone
+# ─────────────────────────────────────────────────────────────────
+
+# ── AMCL ─────────────────────────────────────────────────────────
+amcl:
+  ros__parameters:
+    use_sim_time: false
+
+    min_particles:          500
+    max_particles:          3000
+    pf_err:                 0.05
+    pf_z:                   0.99
+
+    update_min_d:           0.25
+    update_min_a:           0.2
+    resample_interval:      1
+
+    laser_model_type:       "likelihood_field"
+    laser_max_range:        12.0
+    laser_min_range:        -1.0
+    laser_likelihood_max_dist: 2.0
+    max_beams:              60
+
+    z_hit:                  0.5
+    z_short:                0.05
+    z_max:                  0.05
+    z_rand:                 0.5
+    sigma_hit:              0.2
+    lambda_short:           0.1
+
+    robot_model_type:       "nav2_amcl::DifferentialMotionModel"
+
+    alpha1:                 0.2
+    alpha2:                 0.2
+    alpha3:                 0.2
+    alpha4:                 0.2
+    alpha5:                 0.2
+
+    base_frame_id:          "base_footprint"
+    odom_frame_id:          "odom"
+    global_frame_id:        "map"
+    scan_topic:             "scan"
+    odom_topic:             "/odometry/filtered"
+
+    recovery_alpha_slow:    0.0
+    recovery_alpha_fast:    0.0
+
+    transform_tolerance:    2.0
+    tf_broadcast:           true
+    always_reset_initial_pose: false
+    set_initial_pose:       true
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+
+    save_pose_rate:         0.5
+
+    do_beamskip:            false
+    beam_skip_distance:     0.5
+    beam_skip_error_threshold: 0.9
+    beam_skip_threshold:    0.3
+
+# ── Map Server ────────────────────────────────────────────────────
+map_server:
+  ros__parameters:
+    use_sim_time: false
+    yaml_filename: ""
+
+# ── Lifecycle Manager (Localization) ─────────────────────────────
+lifecycle_manager_localization:
+  ros__parameters:
+    use_sim_time: false
+    autostart: true
+    node_names:
+      - "map_server"
+      - "amcl"
+
+# ── BT Navigator ─────────────────────────────────────────────────
+bt_navigator:
+  ros__parameters:
+    use_sim_time: false
+    global_frame:           map
+    robot_base_frame:       base_footprint
+    odom_topic:             /odometry/filtered
+    bt_loop_duration:       10
+    default_server_timeout: 20
+
+    default_nav_to_pose_bt_xml: "/opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml"
+    default_nav_through_poses_bt_xml: "/opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml"
+
+    plugin_lib_names:
+      - nav2_compute_path_to_pose_action_bt_node
+      - nav2_compute_path_through_poses_action_bt_node
+      - nav2_smooth_path_action_bt_node
+      - nav2_follow_path_action_bt_node
+      - nav2_spin_action_bt_node
+      - nav2_wait_action_bt_node
+      - nav2_assisted_teleop_action_bt_node
+      - nav2_back_up_action_bt_node
+      - nav2_drive_on_heading_bt_node
+      - nav2_clear_costmap_service_bt_node
+      - nav2_is_stuck_condition_bt_node
+      - nav2_goal_reached_condition_bt_node
+      - nav2_goal_updated_condition_bt_node
+      - nav2_globally_updated_goal_condition_bt_node
+      - nav2_is_path_valid_condition_bt_node
+      - nav2_initial_pose_received_condition_bt_node
+      - nav2_reinitialize_global_localization_service_bt_node
+      - nav2_rate_controller_bt_node
+      - nav2_distance_controller_bt_node
+      - nav2_speed_controller_bt_node
+      - nav2_truncate_path_action_bt_node
+      - nav2_truncate_path_local_action_bt_node
+      - nav2_goal_updater_node_bt_node
+      - nav2_recovery_node_bt_node
+      - nav2_pipeline_sequence_bt_node
+      - nav2_round_robin_node_bt_node
+      - nav2_transform_available_condition_bt_node
+      - nav2_time_expired_condition_bt_node
+      - nav2_distance_traveled_condition_bt_node
+      - nav2_single_trigger_bt_node
+      - nav2_navigate_through_poses_action_bt_node
+      - nav2_navigate_to_pose_action_bt_node
+      - nav2_remove_passed_goals_action_bt_node
+      - nav2_planner_selector_bt_node
+      - nav2_controller_selector_bt_node
+      - nav2_goal_checker_selector_bt_node
+      - nav2_controller_cancel_bt_node
+      - nav2_path_longer_on_approach_bt_node
+      - nav2_wait_cancel_bt_node
+      - nav2_spin_cancel_bt_node
+      - nav2_back_up_cancel_bt_node
+
+# ── Controller Server ─────────────────────────────────────────────
+controller_server:
+  ros__parameters:
+    use_sim_time: false
+    controller_frequency:   20.0
+    min_x_velocity_threshold:  0.001
+    min_y_velocity_threshold:  0.5
+    min_theta_velocity_threshold: 0.001
+    failure_tolerance:      0.3
+    progress_checker_plugin: "progress_checker"
+    goal_checker_plugins:
+      - "general_goal_checker"
+    controller_plugins:
+      - "FollowPath"
+
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.5
+      movement_time_allowance:  10.0
+
+    general_goal_checker:
+      stateful: true
+      plugin:   "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance:    0.25
+      yaw_goal_tolerance:   0.25
+
+    FollowPath:
+      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      desired_linear_vel:         0.4
+      lookahead_dist:             0.6
+      min_lookahead_dist:         0.3
+      max_lookahead_dist:         0.9
+      lookahead_time:             1.5
+      rotate_to_heading_angular_vel: 1.0
+      transform_tolerance:        0.5
+      use_velocity_scaled_lookahead_dist: false
+      min_approach_linear_velocity: 0.05
+      approach_velocity_scaling_dist: 0.6
+      use_collision_detection:    true
+      max_allowed_time_to_collision_up_to_carrot: 1.0
+      use_regulated_linear_velocity_scaling: true
+      use_fixed_curvature_lookahead: false
+      curvature_feedback_gain:    3.5
+      inflation_cost_scaling_factor:              3.0   # [FIX 9-B] 2.0 → 3.0
+      use_cost_regulated_linear_velocity_scaling: false  # [FIX 9-C] true → false
+      regulated_linear_scaling_min_radius:        0.9   # [FIX 9-C] 0.6 → 0.9
+      regulated_linear_scaling_min_speed:         0.25  # [FIX 9-C] 0.15 → 0.25
+      use_rotate_to_heading:      true
+      allow_reversing:            false
+      rotate_to_heading_min_angle: 0.785
+      max_angular_accel:          2.0
+      max_robot_pose_search_dist: 10.0
+
+# ── Planner Server ────────────────────────────────────────────────
+planner_server:
+  ros__parameters:
+    use_sim_time: false
+    expected_planner_frequency: 20.0
+    planner_plugins:
+      - "GridBased"
+
+    GridBased:
+      plugin: "nav2_navfn_planner/NavfnPlanner"
+      tolerance:      0.5
+      use_astar:      true
+      allow_unknown:  true
+
+# ── Smoother Server ───────────────────────────────────────────────
+smoother_server:
+  ros__parameters:
+    use_sim_time: false
+    smoother_plugins:
+      - "simple_smoother"
+
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance:      1.0e-10
+      max_its:        1000
+      do_refinement:  true
+
+# ── Behavior Server ───────────────────────────────────────────────
+behavior_server:
+  ros__parameters:
+    use_sim_time: false
+    costmap_topic:        local_costmap/costmap_raw
+    footprint_topic:      local_costmap/published_footprint
+    cycle_frequency:      10.0
+    behavior_plugins:
+      - "spin"
+      - "back_up"
+      - "drive_on_heading"
+      - "assisted_teleop"
+      - "wait"
+
+    spin:
+      plugin: "nav2_behaviors/Spin"
+    back_up:
+      plugin: "nav2_behaviors/BackUp"
+    drive_on_heading:
+      plugin: "nav2_behaviors/DriveOnHeading"
+    wait:
+      plugin: "nav2_behaviors/Wait"
+    assisted_teleop:
+      plugin: "nav2_behaviors/AssistedTeleop"
+
+    global_frame:     odom
+    robot_base_frame: base_footprint
+    transform_timeout: 0.1
+    simulate_ahead_time: 2.0
+    max_rotational_vel:  1.0
+    min_rotational_vel:  0.4
+    rotational_acc_lim:  3.2
+
+# ── Waypoint Follower ─────────────────────────────────────────────
+waypoint_follower:
+  ros__parameters:
+    use_sim_time: false
+    loop_rate:    20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+
+    wait_at_waypoint:
+      plugin:     "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled:    true
+      waypoint_pause_duration: 200
+
+# ── Velocity Smoother ─────────────────────────────────────────────
+# [NOTE] section นี้คงไว้ในไฟล์ แต่ node ไม่ได้ถูก start ใน launch file
+#        และถูกเอาออกจาก lifecycle_manager_navigation node_names แล้ว [FIX 8-F]
+velocity_smoother:
+  ros__parameters:
+    use_sim_time: false
+    smoothing_frequency:    20.0
+    scale_velocities:       false
+    feedback:               "OPEN_LOOP"
+    max_velocity:           [1.99, 0.0, 7.10]
+    min_velocity:           [-1.99, 0.0, -7.10]
+    max_accel:              [0.5,  0.0, 2.0]
+    max_decel:              [-0.5, 0.0, -2.0]
+    odom_topic:             /odometry/filtered
+    odom_duration:          0.1
+    deadband_velocity:      [0.0, 0.0, 0.0]
+    velocity_timeout:       1.0
+
+# ── Global Costmap ────────────────────────────────────────────────
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      use_sim_time: false
+      update_frequency:   1.0
+      publish_frequency:  1.0
+      global_frame:       map
+      robot_base_frame:   base_footprint
+      robot_radius:       0.35
+      resolution:         0.05
+      track_unknown_space: true
+      plugins:
+        - "static_layer"
+        - "obstacle_layer"
+        - "inflation_layer"
+
+      static_layer:
+        plugin:      "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: true
+        enabled:     true
+
+      obstacle_layer:
+        plugin:      "nav2_costmap_2d::ObstacleLayer"
+        enabled:     true
+        observation_sources: scan
+        scan:
+          topic:              /scan
+          max_obstacle_height: 2.0
+          clearing:           true
+          marking:            true
+          data_type:          "LaserScan"
+          raytrace_max_range: 12.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 11.5
+          obstacle_min_range: 0.0
+
+      inflation_layer:
+        plugin:           "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0   # [FIX 9-B] 2.0 → 3.0
+        inflation_radius:    0.6   # [FIX 9-A] 1.0 → 0.6
+
+      always_send_full_costmap: true
+
+# ── Local Costmap ─────────────────────────────────────────────────
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      use_sim_time: false
+      update_frequency:   5.0
+      publish_frequency:  2.0
+      global_frame:       odom
+      robot_base_frame:   base_footprint
+      robot_radius:       0.35
+      resolution:         0.05
+      rolling_window:     true
+      width:              3
+      height:             3
+      plugins:
+        - "voxel_layer"
+        - "inflation_layer"
+
+      voxel_layer:
+        plugin:       "nav2_costmap_2d::VoxelLayer"
+        enabled:      true
+        publish_voxel_map: true
+        origin_z:     0.0
+        z_resolution: 0.05
+        z_voxels:     16
+        max_obstacle_height: 2.0
+        mark_threshold:  0
+        observation_sources: scan
+        scan:
+          topic:              /scan
+          max_obstacle_height: 2.0
+          clearing:           true
+          marking:            true
+          data_type:          "LaserScan"
+          raytrace_max_range: 12.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 11.5
+          obstacle_min_range: 0.0
+
+      inflation_layer:
+        plugin:           "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0   # [FIX 9-B] 2.0 → 3.0
+        inflation_radius:    0.6   # [FIX 9-A] 1.0 → 0.6
+
+      always_send_full_costmap: true
+
+# ── Lifecycle Manager (Navigation) ───────────────────────────────
+lifecycle_manager_navigation:
+  ros__parameters:
+    use_sim_time: false
+    autostart: true
+    node_names:
+      - "controller_server"
+      - "smoother_server"
+      - "planner_server"
+      - "behavior_server"
+      - "bt_navigator"
+      - "waypoint_follower"
+      # [FIX 8-F] ลบ velocity_smoother ออก
+    bond_timeout: 4.0

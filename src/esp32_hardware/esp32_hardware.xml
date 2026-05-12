@@ -1,0 +1,12 @@
+<library path="esp32_hardware">
+  <class
+    name="esp32_hardware/Esp32HardwareInterface"
+    type="esp32_hardware::Esp32HardwareInterface"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware plugin for ESP32-based differential drive robot.
+      Subscribes /motor_state (Float32MultiArray: RPM_L, RPM_R, PWM_L, PWM_R).
+      Publishes /cmd_vel (Twist) from diff_drive_controller wheel commands.
+    </description>
+  </class>
+</library>

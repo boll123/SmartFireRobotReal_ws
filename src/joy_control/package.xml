@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>joy_control</name>
+  <version>1.0.0</version>
+  <description>Complete robot control with URDF, ros2_control, and SLAM</description>
+  <maintainer email="admin01@todo.todo">admin01</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- Robot Description -->
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>xacro</depend>
+
+  <!-- ros2_control -->
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>gazebo_ros2_control</depend>
+  <depend>diff_drive_controller</depend>
+  <depend>joint_state_broadcaster</depend>
+
+  <!-- Gazebo -->
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_plugins</depend>
+
+  <!-- Joystick -->
+  <depend>joy</depend>
+  <depend>teleop_twist_joy</depend>
+
+  <!-- IMU Filter -->
+  <depend>imu_filter_madgwick</depend>
+
+  <!-- SLAM -->
+  <depend>cartographer_ros</depend>
+
+  <!-- TF2 -->
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+
+  <!-- Messages -->
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+
+  <!-- micro-ROS -->
+  <depend>micro_ros_agent</depend>
+  <depend>micro_ros_msgs</depend>
+
+  <!-- Visualization -->
+  <depend>rviz2</depend>
+  <depend>tf2</depend>
+  <exec_depend>robot_localization</exec_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

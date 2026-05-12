@@ -1,0 +1,40 @@
+# config/joystick.yaml
+
+joy_node:
+  ros__parameters:
+    device_id: 0
+    deadzone: 0.05
+    autorepeat_rate: 20.0
+
+teleop_twist_joy:
+  ros__parameters:
+    # L2 = axis 2  (ค่า: +1=ปล่อย, -1=กดสุด → ต้อง invert → scale ลบ)
+    # R2 = axis 5  (ค่า: +1=ปล่อย, -1=กดสุด → forward ปกติ → scale ลบแล้ว invert)
+    #
+    # วิธี: ใช้ axis_linear.x = 2 (L2) scale ลบ = ถอยหลัง
+    #       ใช้ axis_linear_turbo.x = 5 (R2) พร้อม enable_turbo_button ไม่มี
+    #       → ไม่สามารถรวม 2 axis เป็นเดินหน้า/ถอยได้ใน teleop_twist_joy ล้วน ๆ
+    #
+    # ✅ วิธีที่ใช้ได้จริง: L2(axis2) เดินหน้า, R2(axis5) ถอยหลัง
+    #    โดยให้ linear.x = axis2 * scale_negative  (L2 กด → ค่า −1 × −0.3 = +0.3 ✓)
+    #    และ linear.x รับ axis5 ด้วยไม่ได้พร้อมกัน
+    #
+    # ─── แนะนำ: ใช้ joy_converter node (ดูด้านล่าง) ───
+
+    axis_linear:
+      x: 2                   # L2 axis
+    scale_linear:
+      x: -0.3               # L2 ค่า −1 เมื่อกด × −0.3 = +0.3 m/s (เดินหน้า)
+    scale_linear_turbo:
+      x: -0.6
+
+    axis_angular:
+      yaw: 3                 # Right stick X (สำรองไว้)
+    scale_angular:
+      yaw: 1.0
+    scale_angular_turbo:
+      yaw: 2.0
+
+    require_enable_button: false
+    enable_button: -1
+    enable_turbo_button: -1

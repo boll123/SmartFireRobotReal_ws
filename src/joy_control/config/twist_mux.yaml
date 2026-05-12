@@ -1,0 +1,32 @@
+# twist_mux.yaml  —  v5-NoSmoother
+# ─────────────────────────────────────────────────────────────────
+# แก้ไขจาก v4:
+#   [FIX] navigation topic: /cmd_vel_nav_smooth → /cmd_vel_nav
+#   เพราะ velocity_smoother ถูกตัดออกใน launch v4
+#   twist_mux รับ cmd_vel ตรงจาก controller_server
+#
+# Priority order:
+#   1. joystick   (100) — PS5 manual override
+#   2. keyboard   (50)  — keyboard teleop
+#   3. tracker    (20)  — object tracking
+#   4. navigation (10)  — Nav2 controller_server → /cmd_vel_nav
+# ─────────────────────────────────────────────────────────────────
+twist_mux:
+  ros__parameters:
+    topics:
+      joystick:
+        topic:    /cmd_vel_joy
+        timeout:  0.5
+        priority: 100
+      keyboard:
+        topic:    /cmd_vel_keyboard
+        timeout:  0.15
+        priority: 50
+      tracker:
+        topic:    /cmd_vel_tracker
+        timeout:  0.5
+        priority: 20
+      navigation:
+        topic:    /cmd_vel_nav        # [v5] เปลี่ยนจาก /cmd_vel_nav_smooth
+        timeout:  0.5
+        priority: 10

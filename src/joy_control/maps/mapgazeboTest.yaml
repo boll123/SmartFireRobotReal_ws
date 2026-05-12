@@ -1,0 +1,7 @@
+image: mapgazeboTest.pgm
+mode: trinary
+resolution: 0.03
+origin: [-0.27, -8.41, 0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.25

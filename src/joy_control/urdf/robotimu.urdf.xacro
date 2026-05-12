@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="urdf_new" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="sim_mode" default="false" />
+
+  <link name="base_footprint">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><box size="0.001 0.001 0.001" /></geometry>
+    </visual>
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="base_link" />
+    <origin xyz="0 0 0.107" rpy="0 0 0" />
+  </joint>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0080039 0.0068633 0.018138" rpy="0 0 0" />
+      <mass value="15" />
+      <inertia ixx="0.089783" ixy="0.00010319" ixz="-7.1372E-05"
+        iyy="0.093997" iyz="0.00017011" izz="0.17606" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/base_link.STL" />
+      </geometry>
+      <material name=""><color rgba="0.75294 0.75294 0.75294 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="LFHover_Wheel">
+    <inertial>
+      <origin xyz="3.81050464473565E-07 0.0291446514181856 -7.27087741074495E-06" rpy="0 0 0" />
+      <mass value="0.958008587347379" />
+      <inertia ixx="0.00158533960760099" ixy="-2.00612727596941E-08" ixz="-1.82625707733848E-09"
+        iyy="0.00270268789560969" iyz="3.82792081544727E-07" izz="0.00158537435896047" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/LFHover_Wheel.STL" />
+      </geometry>
+      <material name=""><color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/LFHover_Wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="LFHover_Wheel_joint" type="continuous">
+    <origin xyz="-0.12807 -0.312 -0.107" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="LFHover_Wheel" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="LFCaster_Wheel">
+    <inertial>
+      <origin xyz="0 0.022 -2.77555756156289E-17" rpy="0 0 0" />
+      <mass value="0.0472944068607781" />
+      <inertia ixx="9.50735464480302E-06" ixy="-1.86428738596125E-22" ixz="-2.99407856522031E-22"
+        iyy="1.41883783502069E-05" iyz="4.54644578657464E-22" izz="9.50735464480302E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/LFCaster_Wheel.STL" />
+      </geometry>
+      <material name=""><color rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/LFCaster_Wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="LFCaster_Wheel_joint" type="continuous">
+    <origin xyz="0.17593 -0.222 -0.162" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="LFCaster_Wheel" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="RTHover_Wheel">
+    <inertial>
+      <origin xyz="5.07887086040326E-07 -0.0291446115167828 -7.26312265808549E-06" rpy="0 0 0" />
+      <mass value="0.95800820545952" />
+      <inertia ixx="0.00158533968192136" ixy="2.67388805650868E-08" ixz="-2.43154794240992E-09"
+        iyy="0.0027026878956097" iyz="-3.82383661552991E-07" izz="0.0015853742846401" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/RTHover_Wheel.STL" />
+      </geometry>
+      <material name=""><color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/RTHover_Wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="RTHover_Wheel_joint" type="continuous">
+    <origin xyz="-0.12807 0.312 -0.107" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="RTHover_Wheel" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="RTCaster_Wheel">
+    <inertial>
+      <origin xyz="0 -0.022 0" rpy="0 0 0" />
+      <mass value="0.0472944068607785" />
+      <inertia ixx="9.50735464480318E-06" ixy="1.62795976420335E-21" ixz="-2.39005921620241E-22"
+        iyy="1.41883783502071E-05" iyz="-8.26978664161297E-23" izz="9.50735464480318E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/RTCaster_Wheel.STL" />
+      </geometry>
+      <material name=""><color rgba="0.294117647058824 0.294117647058824 0.294117647058824 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/RTCaster_Wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="RTCaster_Wheel_joint" type="continuous">
+    <origin xyz="0.17593 0.222 -0.162" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="RTCaster_Wheel" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="laser_frame">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="0.000166667" ixy="0" ixz="0" iyy="0.000166667" iyz="0" izz="0.000125" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><cylinder radius="0.05" length="0.04" /></geometry>
+      <material name="red"><color rgba="1 0 0 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><cylinder radius="0.05" length="0.04" /></geometry>
+    </collision>
+  </link>
+
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="laser_frame" />
+    <origin xyz="0.190000 0.0 0.019405" rpy="0 0 3.14" />
+  </joint>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       [KEY FIX v9] imu_link ย้าย parent จาก base_link → base_footprint
+       และใช้ xyz="0 0 0" (zero offset)
+
+       เหตุผล:
+         Cartographer ต้องการ: distance(imu_frame, tracking_frame) < 1e-5
+         tracking_frame = "imu_link" (ตาม gbot_lidar_2d.lua v16)
+         imu_link colocated กับตัวเอง → ผ่านเสมอ
+
+         อย่างไรก็ตาม เพื่อให้ tf tree ถูกต้องสำหรับ EKF ด้วย:
+         - EKF base_link_frame = "base_footprint"
+         - imu_link ต้องอยู่ใน tf chain ที่ถูกต้อง
+         - การย้าย parent ไป base_footprint ทำให้ chain ชัดเจน:
+           base_footprint → imu_link (zero offset)
+           base_footprint → base_link → [wheels, laser]
+
+         หมายเหตุ: ตำแหน่ง imu_link จะไม่ตรงกับ hardware จริง
+         แต่สำหรับ ground robot ที่ใช้แค่ yaw+gz ผลกระทบน้อยมาก
+         เพราะ linear accel ถูกปิดใน ekf config แล้ว (imu0_config ax,ay=false)
+  ════════════════════════════════════════════════════════════════ -->
+  <link name="imu_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.05" />
+      <inertia ixx="0.0000833" ixy="0" ixz="0" iyy="0.0000833" iyz="0" izz="0.0000833" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><box size="0.03 0.03 0.01" /></geometry>
+      <material name="blue"><color rgba="0 0 1 1" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><box size="0.03 0.03 0.01" /></geometry>
+    </collision>
+  </link>
+
+  <!-- [FIX v9] parent: base_link → base_footprint, xyz: -0.1 0 -0.1 → 0 0 0 -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="imu_link" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <!-- ═══ Gazebo Materials & Physics ═══ -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Grey</material>
+    <mu1>1.0</mu1><mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="LFHover_Wheel">
+    <material>Gazebo/Grey</material>
+    <mu1>100.0</mu1><mu2>50.0</mu2>
+  </gazebo>
+  <gazebo reference="RTHover_Wheel">
+    <material>Gazebo/Grey</material>
+    <mu1>100.0</mu1><mu2>50.0</mu2>
+  </gazebo>
+  <gazebo reference="LFCaster_Wheel">
+    <material>Gazebo/Grey</material>
+    <mu1>0.01</mu1><mu2>0.01</mu2>
+    <kp>1000000.0</kp><kd>1.0</kd>
+    <minDepth>0.001</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+  <gazebo reference="RTCaster_Wheel">
+    <material>Gazebo/Grey</material>
+    <mu1>0.01</mu1><mu2>0.01</mu2>
+    <kp>1000000.0</kp><kd>1.0</kd>
+    <minDepth>0.001</minDepth><maxVel>0.1</maxVel>
+  </gazebo>
+
+  <!-- ═══ Laser Sensor ═══ -->
+  <gazebo reference="laser_frame">
+    <material>Gazebo/Red</material>
+    <sensor type="ray" name="laser_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>25</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples><resolution>1</resolution>
+            <min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.6</min><max>12.0</max><resolution>0.01</resolution>
+        </range>
+        <noise><type>gaussian</type><mean>0.0</mean><stddev>0.01</stddev></noise>
+      </ray>
+      <plugin name="gazebo_ros_laser" filename="libgazebo_ros_ray_sensor.so">
+        <ros><remapping>~/out:=scan</remapping></ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>laser_frame</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- ═══ IMU Sensor (sim only) ═══ -->
+  <xacro:if value="$(arg sim_mode)">
+    <gazebo reference="imu_link">
+      <sensor name="imu_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>50</update_rate>
+        <visualize>true</visualize>
+        <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros><remapping>~/out:=/imu/data_raw</remapping></ros>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+          <frame_name>imu_link</frame_name>
+        </plugin>
+        <pose>0 0 0 0 0 0</pose>
+      </sensor>
+    </gazebo>
+  </xacro:if>
+
+  <!-- ═══ Sim: gazebo_ros2_control ═══ -->
+  <xacro:if value="$(arg sim_mode)">
+    <gazebo>
+      <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+        <parameters>$(find joy_control)/config/ros2_controllersReal.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+  <!-- ═══ ros2_control: Real Robot ═══ -->
+  <xacro:unless value="$(arg sim_mode)">
+    <ros2_control name="RealRobot" type="system">
+      <hardware>
+        <plugin>esp32_hardware/Esp32HardwareInterface</plugin>
+        <param name="wheel_radius">0.0826</param>
+        <param name="wheel_separation">0.56</param>
+        <param name="rpm_deadzone">3.0</param>
+        <param name="rpm_lpf_alpha">0.20</param>
+        <param name="cmd_publish_rate">20.0</param>
+        <param name="max_omega">7.33</param>
+        <param name="dead_band">0.05</param>
+        <param name="cmd_timeout_ms">200.0</param>
+        <param name="trim_ratio">1.0</param>
+      </hardware>
+      <joint name="LFHover_Wheel_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="RTHover_Wheel_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="LFCaster_Wheel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="RTCaster_Wheel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+  </xacro:unless>
+
+  <!-- ═══ ros2_control: Sim ═══ -->
+  <xacro:if value="$(arg sim_mode)">
+    <ros2_control name="SimSystem" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+      <joint name="LFHover_Wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-10</param>
+          <param name="max">10</param>
+        </command_interface>
+        <state_interface name="velocity">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+      </joint>
+      <joint name="RTHover_Wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-10</param>
+          <param name="max">10</param>
+        </command_interface>
+        <state_interface name="velocity">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+      </joint>
+      <joint name="LFCaster_Wheel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="RTCaster_Wheel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+  </xacro:if>
+
+</robot>

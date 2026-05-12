@@ -1,0 +1,153 @@
+# ekf_odom_imu.yaml  —  v12-WheelSepFix
+# ─────────────────────────────────────────────────────────────────
+# v12 changes (from v11-MapFix):
+#
+#   [FIX MAP TILT - KEY]
+#       yaw process_noise: 0.15 → 0.25
+#       เหตุผล: wheel_separation ใน controller yaml ผิด (0.56 แทน 0.628)
+#               ทำให้ odom yaw ผิด ~12% ทุก rotation
+#               เพิ่ม yaw noise → EKF trust odom yaw น้อยลง
+#               → Cartographer/lidar สามารถแก้ heading ได้มากขึ้น
+#               ** แก้ wheel_separation ใน ros2_controllersReal.yaml
+#                  เป็น 0.572 ด้วย (แก้ root cause) **
+#
+#   [FIX MAP TILT]
+#       yaw angular velocity process_noise (vyaw): 0.08 → 0.12
+#       เหตุผล: สอดคล้องกับ yaw noise ที่เพิ่มขึ้น
+#               ให้ EKF ไม่ยึด gyro rate แข็งเกินไป
+#
+#   [FIX ODOM TRUST]
+#       odom0_config vx: true → true (คงเดิม)
+#       odom0_queue_size: 10 → 20
+#       เหตุผล: เพิ่ม buffer ให้ EKF มี odom sample มากขึ้นก่อน fuse
+#               ลด latency mismatch ระหว่าง odom 50Hz กับ IMU 50Hz
+#
+#   [KEEP v11]
+#       imu0_relative: false  (absolute yaw จาก IMU)
+#       sensor_timeout: 0.2
+#       imu0_nodelay: true
+#       process_noise x,y: 0.03
+#       imu0_config yaw+gz only, ax,ay=false
+#
+# ─────────────────────────────────────────────────────────────────
+# Timing dependency (จาก launch file v9):
+#   t=4s  imu_gyro_integrator start
+#   t=8s  reset imu yaw
+#   t=9s  ekf_filter_node start  ← ไฟล์นี้
+#   t=45s cartographer start     ← EKF run 36s ก่อน Cartographer
+# ─────────────────────────────────────────────────────────────────
+
+ekf_filter_node:
+  ros__parameters:
+
+    world_frame:     odom
+    odom_frame:      odom
+    base_link_frame: base_footprint
+    map_frame:       map
+
+    frequency: 50.0
+
+    # sensor_timeout=0.2 ปลอดภัยสำหรับ lidar interval ~0.135s
+    # และ IMU 50Hz interval ~0.02s
+    sensor_timeout: 0.2
+
+    publish_tf: true
+    transform_time_offset: 0.0
+
+    # ── Process Noise Covariance ──────────────────────────────────
+    # [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
+    #
+    # หลักการเลือกค่า:
+    #   - ค่าสูง  = EKF ไม่ trust model มาก → sensor แก้ได้มาก (flexible)
+    #   - ค่าต่ำ  = EKF trust model มาก    → sensor แก้ได้น้อย (rigid)
+    #
+    # x,y     = 0.03  (เชื่อ odom position พอสมควร)
+    # yaw     = 0.25  [v12 เพิ่มจาก 0.15] wheel_sep ผิด → odom yaw ผิด
+    #                  → เพิ่ม noise ให้ lidar/Cartographer แก้ได้มากขึ้น
+    # vx,vy   = 0.025 (velocity noise ปานกลาง)
+    # vyaw    = 0.12  [v12 เพิ่มจาก 0.08] สอดคล้องกับ yaw noise
+    # ax,ay   = 0.01  (accel noise เล็กน้อย — ax,ay ไม่ได้ fuse แต่ต้องระบุ)
+    process_noise_covariance: [
+      0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.06,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.25,  0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.04, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.01, 0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.01, 0.0,  0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.12, 0.0,  0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.01, 0.0,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.01, 0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.015
+    ]
+
+    # ── Sensor 0: Wheel Odometry ──────────────────────────────────
+    # Topic: /diff_drive_controller/odom
+    # fuse: x, y, vx  (ไม่ fuse yaw จาก odom เพราะ wheel_sep อาจผิด)
+    #       → ให้ IMU รับผิดชอบ yaw แทน
+    odom0: /diff_drive_controller/odom
+    odom0_config: [
+      true,  true,  false,   # x, y, z
+      false, false, false,   # roll, pitch, yaw  ← ไม่ fuse yaw จาก odom
+      true,  false, false,   # vx, vy, vz
+      false, false, false,   # vroll, vpitch, vyaw
+      false, false, false    # ax, ay, az
+    ]
+    odom0_differential: false
+    odom0_relative:     false
+    # [v12] เพิ่มจาก 10 → 20 เพื่อ buffer odom ให้เพียงพอ
+    odom0_queue_size:   20
+
+    # ── Sensor 1: IMU ─────────────────────────────────────────────
+    # Topic: /imu/data  (จาก imu_gyro_integrator — มี orientation quaternion)
+    # fuse: yaw, gz เท่านั้น
+    #   - yaw (absolute) ← imu0_relative=false
+    #   - gz  (angular velocity z)
+    #   - ax, ay = false  เพราะ vibration จากมอเตอร์รบกวนมาก
+    imu0: /imu/data
+    imu0_config: [
+      false, false, false,   # x, y, z
+      false, false, true,    # roll, pitch, yaw  ← yaw เท่านั้น
+      false, false, false,   # vx, vy, vz
+      false, false, true,    # vroll, vpitch, vyaw  ← gz เท่านั้น
+      false, false, false    # ax, ay, az  ← false (motor vibration)
+    ]
+    imu0_differential: false
+
+    # [KEY - v11/v12] relative=false → ใช้ absolute yaw จาก IMU
+    # imu_gyro_integrator integrate gz และ reset ที่ t=8s
+    # → yaw=0 เมื่อ EKF start (t=9s) → heading reference ถูกต้อง
+    # relative=true  → ใช้ yaw delta → drift สะสม → map เอียง
+    imu0_relative:   false
+
+    imu0_queue_size: 50
+    imu0_remove_gravitational_acceleration: true
+
+    # nodelay=true → ลด latency ของ IMU message เข้า EKF
+    # สำคัญเพราะ IMU 50Hz และ EKF 50Hz → ต้องการ sync ที่ดี
+    imu0_nodelay: true
+
+    # ── Initial Estimate Covariance ───────────────────────────────
+    # 1e-9 ทุกตัว → EKF เชื่อ initial state มาก (หุ่นเริ่มที่ origin)
+    # reset ที่ t=8s (imu yaw) + t=9s (ekf start) → initial state ถูกต้อง
+    initial_estimate_covariance: [
+      1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,
+      0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9
+    ]

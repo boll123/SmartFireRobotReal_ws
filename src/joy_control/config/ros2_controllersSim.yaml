@@ -1,0 +1,73 @@
+# ros2_controllersSim.yaml  —  v1-GazeboSLAM
+# ─────────────────────────────────────────────────────────────────
+# อิงจาก ros2_controllersReal.yaml (v15-RollingWindowFix)
+#
+# สิ่งที่ต่างจาก Real:
+#   - use_sim_time: true  (ทุก node ใช้ /clock จาก Gazebo)
+#   - ลบ esp32_hardware_interface section ออก (ไม่มี serial hardware)
+#   - wheel_separation: 0.572 (ค่าเดียวกับ real เพื่อ odom ถูกต้อง)
+#
+# หมายเหตุ:
+#   - gazebo_ros2_control plugin โหลด yaml นี้ผ่าน URDF <parameters>
+#   - controller_manager node ก็โหลด yaml นี้ผ่าน launch file
+# ─────────────────────────────────────────────────────────────────
+
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+    use_sim_time: true # [SIM] ใช้ /clock จาก Gazebo
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    left_wheel_names: ["HoverWheelL_joint"]
+    right_wheel_names: ["HoverWheelR_joint"]
+
+    wheel_separation: 0.572 # ค่าจริงจาก joint origin y=±0.286 → 0.286*2=0.572
+    wheel_radius: 0.0826
+
+    wheel_separation_multiplier: 1.0
+    left_wheel_radius_multiplier: 1.0
+    right_wheel_radius_multiplier: 1.0
+
+    publish_rate: 50.0
+    velocity_rolling_window_size: 10
+
+    # ── Velocity limits ──────────────────────────────────────────
+    linear.x.has_velocity_limits: true
+    linear.x.max_velocity: 0.40
+    linear.x.min_velocity: -0.40
+    angular.z.has_velocity_limits: true
+    angular.z.max_velocity: 0.80
+    angular.z.min_velocity: -0.80
+
+    # ── Acceleration limits ──────────────────────────────────────
+    linear.x.has_acceleration_limits: true
+    linear.x.max_acceleration: 0.15
+    linear.x.min_acceleration: -0.15
+    angular.z.has_acceleration_limits: true
+    angular.z.max_acceleration: 0.40
+    angular.z.min_acceleration: -0.40
+
+    # ── Deceleration limits ──────────────────────────────────────
+    linear.x.has_deceleration_limits: true
+    linear.x.max_deceleration: 8.0
+    linear.x.min_deceleration: -8.0
+    angular.z.has_deceleration_limits: true
+    angular.z.max_deceleration: 10.0
+    angular.z.min_deceleration: -10.0
+
+    use_stamped_vel: false
+    open_loop: false
+    enable_odom_tf: false
+
+    pose_covariance_diagonal: [0.05, 0.05, 1.0e6, 1.0e6, 1.0e6, 0.20]
+    twist_covariance_diagonal: [0.05, 1.0e6, 1.0e6, 1.0e6, 1.0e6, 0.20]
+
+# [SIM] ไม่มี esp32_hardware_interface section
+# hardware จัดการโดย gazebo_ros2_control/GazeboSystem ใน URDF
