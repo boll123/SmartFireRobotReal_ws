@@ -33,7 +33,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/base_link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -47,7 +47,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/base_link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -73,7 +73,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/HoverWheelL_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/HoverWheelL_Link.STL" />
       </geometry>
       <material
         name="">
@@ -87,7 +87,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/HoverWheelL_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/HoverWheelL_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -126,7 +126,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/CasterWheelL_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/CasterWheelL_Link.STL" />
       </geometry>
       <material
         name="">
@@ -140,7 +140,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/CasterWheelL_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/CasterWheelL_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -179,7 +179,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/HoverWheelR_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/HoverWheelR_Link.STL" />
       </geometry>
       <material
         name="">
@@ -193,7 +193,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/HoverWheelR_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/HoverWheelR_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -232,7 +232,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/CasterWheelR_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/CasterWheelR_Link.STL" />
       </geometry>
       <material
         name="">
@@ -246,7 +246,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/CasterWheelR_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/CasterWheelR_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -285,7 +285,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/Laser_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/Laser_Link.STL" />
       </geometry>
       <material
         name="">
@@ -299,7 +299,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/Laser_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/Laser_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -338,7 +338,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/IMU_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/IMU_Link.STL" />
       </geometry>
       <material
         name="">
@@ -352,7 +352,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="file:///home/admin01/SmartFireRobot_ws/src/joy_control/meshes/IMU_Link.STL" />
+          filename="file:///home/admin01/SmartFireRobotReal_ws/src/joy_control/meshes/IMU_Link.STL" />
       </geometry>
     </collision>
   </link>
